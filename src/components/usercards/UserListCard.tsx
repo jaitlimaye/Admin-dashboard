@@ -1,9 +1,33 @@
 import { Box, Typography, Avatar, Grid,Button} from '@mui/material';
 import { User } from '../../utils/types/data/datatype';
+import { useNavigate} from "react-router";
+
 export const UserListCard = ({user}:{user : User}) => {
+  const navigate = useNavigate();
+    const handleUserClick = (id : number) => {
+      navigate(`/user/${id}`);
+    }
     return (
+     
         <Grid size = { {xs : 12}}>
-              <Box sx={{ display: 'flex',flexDirection: 'row', alignItems: 'center',justifyContent: 'space-between',p:2, border: '1px solid #ccc', borderRadius: 1 }}>
+              <Box
+              onClick={() => handleUserClick(user.id)}
+  sx={{
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    p: 2,
+    border: '1px solid #ccc',
+    transition: 'transform 0.3s, box-shadow 0.3s, background-color 0.3s',
+    '&:hover': {
+      boxShadow: '0 8px 12px rgba(0, 0, 0, 0.2)',
+      p:3,
+      backgroundColor: '#f0f0f0', 
+      cursor: 'pointer'
+    },
+  }}
+>
               <Box sx={{ display: 'flex',flexDirection: 'row',alignItems: 'center',justifyContent: 'center', gap: 1 }}>
                 <Avatar src={user.avatar} alt={user.first_name} sx={{ mr: 5 }} />
               

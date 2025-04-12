@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUsers } from '../utils/api/apiservice';
-import { Box, Typography, Container, Button, TextField, MenuItem, Select, FormControl, InputLabel, IconButton} from '@mui/material';
-import { ErrorDisplay,Loading } from '../components/displays';
+import { Box, Typography, Container, Button, TextField, MenuItem, Select, FormControl, InputLabel, IconButton, Pagination, Divider, Stack, Grid } from '@mui/material';
+import { ErrorDisplay, Loading } from '../components/displays';
 import { User } from '../utils/types/data/datatype';
-import { CardGrid , ListGrid } from '../components/userlayouts';
+import { CardGrid, ListGrid } from '../components/userlayouts';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ListIcon from '@mui/icons-material/List';
@@ -15,7 +15,7 @@ const initialState: State = {
   searchQuery: "",
   sortBy: "first_name",
   sortAsc: true,
-  usersPerPage  : 5, 
+  usersPerPage: 5,
 };
 
 function reducer(state: State, action: Action): State {
@@ -45,7 +45,7 @@ function reducer(state: State, action: Action): State {
 }
 const Home = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { page, searchQuery, sortBy, sortAsc, usersPerPage} = state;
+  const { page, searchQuery, sortBy, sortAsc, usersPerPage } = state;
   const [viewMode, setViewMode] = useState('list'); // Toggle between 'list' and 'card'
   const [showFilters, setShowFilters] = useState(false);
   const { data, isLoading, isError, error, isFetching } = useQuery({
@@ -78,7 +78,15 @@ const Home = () => {
 
   if (users.length === 0) {
     return (
-      <Container>
+      <Container sx={{
+        paddingTop: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        mb: 3,
+        width : "100%"
+      }}>
         <Typography variant="h6" color="error">
           No users found.
         </Typography>
@@ -87,133 +95,166 @@ const Home = () => {
   }
 
   return (
-    <Container sx={{ paddingTop: 4, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', mb: 3 }}>
+    <Container
+      sx={{
+        paddingTop: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        mb: 3,
+        minWidth : "100%"
+      }}
+    >
+      <Box sx={{ width: '100%', mb: 4 }}>
+      {/* Header Section */}
+      <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      mb: 2,
+        minWidth : "100%"
+    }}
+  >
+    <Typography variant="h4" component="h1">
+      Users
+    </Typography>
+    <Button variant="contained" color="primary">
+      New User
+    </Button>
+  </Box>
+  <Divider sx={{ mb: 2 }} />
+      {/* Search and Filter Section */}
+      <Box>
+      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+    <TextField
+      fullWidth
+      label="Search"
+      variant="outlined"
+      value={searchQuery}
+      onChange={(e) =>
+        dispatch({ type: 'SET_SEARCH', payload: e.target.value })
+      }
+    />
+    <IconButton
+      color="primary"
+      onClick={() => setShowFilters((prev) => !prev)}
+    >
+      <FilterListIcon />
+    </IconButton>
+  </Stack>
+  {showFilters && (
+    <Grid
+      container
+      spacing={2}
+      alignItems="center"
+      sx={{
+        mb: 2,
+        borderRadius: 2,
+      }}
+    >
+      <Grid size = {{xs : 12 ,sm : 6, md : 3}}>
+        <FormControl fullWidth>
+          <InputLabel id="sort-label">Sort By</InputLabel>
+          <Select
+            labelId="sort-label"
+            value={sortBy}
+            label="Sort By"
+            onChange={(e) =>
+              dispatch({
+                type: 'SET_SORT',
+                payload: e.target.value as keyof User,
+              })
+            }
+          >
+            <MenuItem value="first_name">First Name</MenuItem>
+            <MenuItem value="last_name">Last Name</MenuItem>
+            <MenuItem value="email">Email</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
 
-<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Users
-        </Typography>
-        <Button variant="contained" color="primary">
-          New User
-        </Button>
-      </Box>
-      <Box sx={{ display: 'flex',flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', width: '100%', mb: 2 ,gap:1}}>
-        <Container sx={{ display: 'flex',flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-        <TextField label="Search" variant="outlined" sx={{ flex: 1, mx: 2 }} value={searchQuery}
-        onChange={(e) => dispatch({ type: "SET_SEARCH", payload: e.target.value })}/>
+      <Grid size ={{xs : 12 ,sm : 6, md : 3}}>
+        <FormControl fullWidth>
+          <InputLabel id="order-label">Order</InputLabel>
+          <Select
+            labelId="order-label"
+            value={sortAsc ? 'asc' : 'desc'}
+            label="Order"
+            onChange={(e) =>
+              dispatch({
+                type: 'SET_SORT_ASC',
+                payload: e.target.value === 'asc',
+              })
+            }
+          >
+            <MenuItem value="asc">Ascending</MenuItem>
+            <MenuItem value="desc">Descending</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+
+      <Grid size ={{xs : 12 ,sm : 6, md : 3}}>
+        <FormControl fullWidth>
+          <InputLabel id="items-label">Items Per Page</InputLabel>
+          <Select
+            labelId="items-label"
+            value={usersPerPage}
+            label="Items Per Page"
+            onChange={(e) =>
+              dispatch({
+                type: 'SET_USERS_PER_PAGE',
+                payload: Number(e.target.value),
+              })
+            }
+          >
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={15}>15</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+
+      <Grid size ={{xs : 12 ,sm : 6, md : 3}}>
         <IconButton
           color="primary"
-          onClick={() => setShowFilters((prev) => !prev)}
-        >
-          <FilterListIcon />
-        </IconButton>
-        </Container>
-        {showFilters && (
-          
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            alignItems: "center",
-            mb: 3,
-            flexWrap: "wrap",
-          }}
-        >
-          <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel id="sort-label">Sort By</InputLabel>
-            <Select
-              labelId="sort-label"
-              value={sortBy}
-              onChange={(e) =>
-                dispatch({ type: "SET_SORT", payload: e.target.value as keyof User })
-              }
-              label="Sort By"
-            >
-              <MenuItem value="first_name">First Name</MenuItem>
-              <MenuItem value="last_name">Last Name</MenuItem>
-              <MenuItem value="email">Email</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel id="order-label">Order</InputLabel>
-            <Select
-              labelId="order-label"
-              value={sortAsc ? "asc" : "desc"}
-              onChange={(e) =>
-                dispatch({
-                  type: "SET_SORT_ASC",
-                  payload: e.target.value === "asc" 
-                })
-              }
-              label="Order"
-            >
-              <MenuItem value="asc">Ascending</MenuItem>
-              <MenuItem value="desc">Descending</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel id="items-label">Items Per Page</InputLabel>
-            <Select
-              labelId="items-label"
-              value={usersPerPage}
-              onChange={(e) =>
-                dispatch({ type: "SET_USERS_PER_PAGE", payload: Number(e.target.value) })
-              }
-              label="Items Per Page"
-            >
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={15}>15</MenuItem>
-            </Select>
-          </FormControl>
-          <IconButton
-          color="primary"
           onClick={() =>
-            setViewMode((prev) => (prev === "list" ? "card" : "list"))
+            setViewMode((prev) => (prev === 'list' ? 'card' : 'list'))
           }
+          sx={{ border: '1px solid #ccc', borderRadius: 1 }}
         >
-          {viewMode === "list" ? <GridViewIcon /> : <ListIcon />}
-        </IconButton>    
-          </Box>
-        )}
+          {viewMode === 'list' ? <GridViewIcon /> : <ListIcon />}
+        </IconButton>
+      </Grid>
+    </Grid>
+  )}
+  </Box>
       </Box>
+
+      {/* User Layout Section */}
       {viewMode === 'list' ? (
         <ListGrid users={paginatedUsers} />
       ) : (
         <CardGrid users={paginatedUsers} />
       )}
-      <div style={{ marginTop: "10px" }}>
-        <button
-          onClick={() => dispatch({ type: "PREV_PAGE" })}
-          disabled={page === 1}
-        >
-          Prev
-        </button>
-        <span style={{ margin: "0 10px" }}>
-          Page {page} of {Math.ceil(filteredUsers.length / usersPerPage)}
-        </span>
-        <button
-          onClick={() => dispatch({ type: "NEXT_PAGE" })}
-          disabled={page === Math.ceil(filteredUsers.length / usersPerPage)}
-        >
-          Next
-        </button>
-        {isFetching && <span> Loading new page...</span>}
-      </div>
+
+      {/* Pagination Section */}
+      <Box sx={{ marginTop: 3, display: 'flex', justifyContent: 'center' }}>
+        <Pagination
+          count={Math.ceil(filteredUsers.length / usersPerPage)}
+          page={page}
+          onChange={(_, value) => dispatch({ type: 'SET_PAGE', payload: value })}
+          color="primary"
+        />
+        {isFetching && (
+          <Typography variant="body2" sx={{ ml: 2 }}>
+            Loading new page...
+          </Typography>
+        )}
+      </Box>
     </Container>
   );
 };
 
 export default Home;
-
-/*
-
-
-      
-      
-
-      
-      
-    
-
-*/

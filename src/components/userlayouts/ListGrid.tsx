@@ -4,7 +4,7 @@ import { UserListCard } from '../usercards';
 
 export const ListGrid = ({users } : {users : User[]}) => {
     return(
-        <Grid container spacing={2}>
+        <Grid container sx={{minWidth : '100%'}}>
           {users.map((user) => (
             <UserListCard user={user} key={user.id} />
           ))}
