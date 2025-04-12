@@ -1,10 +1,11 @@
 import {Routes, Route } from "react-router";
-import { LoginPage,RegisterPage,Home } from "../../pages";
+import { LoginPage,RegisterPage,Home, UserDetails } from "../../pages";
 export const RouterService = () => {
     const ROUTES = [{path :"/" ,element:<LoginPage />},
         {path :"/login", element:<LoginPage />},
         {path :"/register", element:<RegisterPage />},
         {path :"/home", element:<Home />},
+        {path :"/user/:id", element:<UserDetails />},
     ];
 
     return (

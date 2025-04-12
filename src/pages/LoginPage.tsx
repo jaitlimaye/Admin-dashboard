@@ -15,7 +15,12 @@ const LoginPage = () => {
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container maxWidth="xs" sx={{
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 8,
+    }}>
       <Box
         sx={{
           display: 'flex',
