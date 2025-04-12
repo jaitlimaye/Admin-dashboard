@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { User } from '../types/data/datatype';
+import { getApiResponse } from '../types/response/listresponsetype';
+import { containerClasses } from '@mui/material';
 
 const API_BASE_URL = 'https://reqres.in/api';
 
@@ -10,11 +13,23 @@ const api = axios.create({
 });
 
 export const getUsers = async () => {
-  const response = await api.get('/users');
-  if(!response.data) {
+  let page = 1;
+  let allUsers: User[] = [];
+  let totalPages = 1;
+  
+  do {
+    const response  = await api.get(`/users?page=${page}`) ;
+    const data = response.data; 
+    totalPages = data.total_pages;
+    console.log('Response:', response); 
+    allUsers = [...allUsers, ...data.data]; 
+    console.log(allUsers); 
+    page++;
+  } while (page <= totalPages);
+  if(!allUsers) {
     throw new Error('No data found in the response');
   }
-  return response.data; // Return only the data property
+  return allUsers; // Return only the data property
 };
 
 export const getUserData = async (id : string) => {
