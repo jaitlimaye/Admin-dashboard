@@ -34,10 +34,17 @@ export const getUsers = async () => {
 
 export const getUserData = async (id : string) => {
   const response = await api.get(`/users/${id}`);
-  console.log('Response:', response); // Log the entire response object
   if(!response.data) {
     throw new Error('No data found in the response');
   }
   return response.data; // Return only the data property
 };
 
+export const patchUserData = async (id : string, data : {[key: string] : string}) => {
+  const response = await api.patch(`/users/${id}`, data);
+  console.log('Response:', response); // Log the entire response object
+  if(!response.data) {
+    throw new Error('No data found in the response');
+  }
+  return response.data; // Return only the data property
+}

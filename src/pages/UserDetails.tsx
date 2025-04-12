@@ -66,10 +66,10 @@ const UserDetails = () => {
 
         {/* Name Section */}
         <Grid sx = {{display: 'flex',flexDirection: 'column',alignItems: 'center',justifyContent: 'center', width:"100%",gap: 1 }}>
-          <EditableField field={first_name} label="First Name"/>
-          <EditableField field={last_name} label="Last Name"/>
+          <EditableField field={first_name} label="First Name" field_key="first_name" userId={id}/>
+          <EditableField field={last_name} label="Last Name" field_key="last_name" userId={id}/>
         
-        <EditableField field={email} label="Email"/>
+        <EditableField field={email} label="Email" field_key="email" userId={id}/>
         </Grid>
       </Box>
       <Box sx= {{display:'flex',flexDirection: 'row', justifyContent : 'flex-end'}}>
