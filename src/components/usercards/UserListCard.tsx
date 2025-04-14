@@ -9,12 +9,19 @@ export const UserListCard = ({user}:{user : User}) => {
       navigate(`/user/${id}`);
     }
 
-    const {setEditModalEnable,setData} = useUIStore();
+    const {setEditModalEnable,setData,setDeleteModalEnable} = useUIStore();
+    
     const handleEditClick = (e : any) => {
         e.stopPropagation();
         setData(user);
         setEditModalEnable(true);
     }
+
+    const handleDeleteClick = (e : any) => {
+      e.stopPropagation();
+      setData(user);
+      setDeleteModalEnable(true);
+  }
 
     return (
      
@@ -47,7 +54,7 @@ export const UserListCard = ({user}:{user : User}) => {
                 <Button variant="outlined" color="primary" size="small" onClick={(e) => handleEditClick(e)}>
                   Edit
                 </Button>
-                <Button variant="outlined" color="error" size="small">
+                <Button variant="outlined" color="error" size="small" onClick={(e) => handleDeleteClick(e)}>
                   Delete
                 </Button>
               </Box>

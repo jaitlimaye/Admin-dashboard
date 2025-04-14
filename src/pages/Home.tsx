@@ -1,47 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
-import { getUsers } from '../utils/api/apiservice';
-import { Box, Typography, Container, Button, TextField, MenuItem, Select, FormControl, InputLabel, IconButton, Pagination, Divider, Stack, Grid } from '@mui/material';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getUsers, postCreateUserData, putEditUserData } from '../utils/api/apiservice';
+import { Box, Typography, Container, Button, TextField, MenuItem, Select, FormControl, InputLabel, Pagination, Divider, Stack, Grid } from '@mui/material';
 import { ErrorDisplay, Loading } from '../components/displays';
 import { User } from '../utils/types/data/datatype';
-import { CardGrid, ListGrid } from '../components/userlayouts';
-import { useState, useReducer } from 'react';
-import { State, Action } from '../utils/types/ui/homepagestate';
+import { ListGrid } from '../components/userlayouts';
+import { useReducer } from 'react';
 import Navbar from '../components/Navbar';
 import useUIStore from '../utils/stores/uiStore';
 import UserModal from '../components/modals/userModal';
-const initialState: State = {
-  page: 1,
-  searchQuery: "",
-  sortBy: "first_name",
-  sortAsc: true,
-  usersPerPage: 5,
-};
+import {reducer,initialState} from '../utils/reducers/homePageReducer';
+import { createUserRequest } from '../utils/types/request/createUserRequesttype';
+import { DeleteModal } from '../components/modals/deleteModal';
 
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "NEXT_PAGE":
-      return { ...state, page: state.page + 1 };
-    case "PREV_PAGE":
-      return { ...state, page: Math.max(1, state.page - 1) };
-    case "SET_PAGE":
-      return { ...state, page: action.payload };
-    case "SET_SEARCH":
-      return { ...state, searchQuery: action.payload, page: 1 };
-    case "SET_SORT":
-      return {
-        ...state,
-        sortBy: action.payload,
-      };
-    case "SET_SORT_ASC":
-      return { ...state, sortAsc: action.payload };
-    case "SET_USERS_PER_PAGE":
-      let topuser = ((state.page - 1) * state.usersPerPage) + 1;
-      let currpage = Math.ceil(topuser / action.payload);
-      return { ...state, usersPerPage: action.payload, page: currpage };
-    default:
-      return state;
-  }
-}
+
 const Home = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { page, searchQuery, sortBy, sortAsc, usersPerPage } = state;
@@ -50,13 +21,31 @@ const Home = () => {
     queryFn: () => getUsers(), // Fetch all users
   });
   
-  const { setEditModalEnable, editModalEnable,createModalEnable,setCreateModalEnable } = useUIStore();
-  const userdata = {
+  const createMutation = useMutation({
+    mutationFn: (newuserdata: createUserRequest) =>
+      postCreateUserData(newuserdata),
+    onError: (err) => {
+      console.error("Error updating user:", err);
+      // Show error toast/snackbar here if needed
+    }
+  });
+  const editMutation = useMutation({
+    mutationFn: (edituserdata: User) =>
+      putEditUserData(edituserdata),
+    onError: (err) => {
+      console.error("Error updating user:", err);
+      // Show error toast/snackbar here if needed
+    }
+  });
+
+
+  const { setData,setEditModalEnable, editModalEnable,createModalEnable,setCreateModalEnable,setDeleteModalEnable,deleteModalEnable } = useUIStore();
+  const initialuserdata = {
     id: 0,
-    first_name: "John",
-    last_name: "Doe",
-    email : 'aa',
-    avatar: 'sfas',
+    first_name: "",
+    last_name: "",
+    email : '',
+    avatar: '',
   }
   if (isLoading) {
     return <Loading />;
@@ -80,15 +69,29 @@ const Home = () => {
   });
 
   const paginatedUsers = sortedUsers.slice((page - 1) * usersPerPage, page * usersPerPage);
+  const handleCreatOpen = () => {
+    setData(initialuserdata);
+    setCreateModalEnable(true);
+  }
   const handleEditClose = () => {
     setEditModalEnable(false);
   };
   const handleCreateClose = () => {
     setCreateModalEnable(false);
   };
+  const handleDeleteClose = () => {
+    setDeleteModalEnable(false);
+  }
+
   const handleEditSave = (user : User) => {
-    console.log('close')
+    editMutation.mutate(user);
+    setEditModalEnable(false);
   };
+  const handleCreateSave = (newuser : createUserRequest ) => {
+    console.log('new user',newuser)
+    createMutation.mutate(newuser);
+    setCreateModalEnable(false);
+  }
   if (users.length === 0) {
     return (
       <Container sx={{
@@ -146,7 +149,7 @@ const Home = () => {
         dispatch({ type: 'SET_SEARCH', payload: e.target.value })
       }
     />
-    <Button variant="contained" color="primary" onClick={() => setCreateModalEnable(true)}>
+    <Button variant="contained" color="primary" onClick={() => handleCreatOpen()}>
       New User
     </Button>
     </Stack>
@@ -249,9 +252,11 @@ const Home = () => {
       </Box>
     </Container>
         {editModalEnable && (
-          <UserModal user={userdata}  onClose={() => handleEditClose()}  onSave={handleEditSave} title='Edit User'/>)}
+          <UserModal  onClose={() => handleEditClose()}  onSave={handleEditSave} title='Edit User'/>)}
           {createModalEnable && (
-            <UserModal user={userdata}  onClose={() => handleCreateClose()}  onSave={handleEditSave} title='Create User'/>)}
+            <UserModal  onClose={() => handleCreateClose()}  onSave={handleCreateSave} title='Create User'/>)}
+            {deleteModalEnable && (
+              <DeleteModal   onClose={() => handleDeleteClose()}  onDelete={() => {}} />)}
     </>
   );
 };

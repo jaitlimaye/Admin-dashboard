@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { User } from '../types/data/datatype';
+import { createUserRequest } from '../types/request/createUserRequesttype';
 
 const API_BASE_URL = 'https://reqres.in/api';
 
@@ -50,6 +51,42 @@ export const patchUserData = async (id : string, data : {[key: string] : string}
 export const postLoginData = async (data : {email: string, password: string}) => {
   const response = await api.post(`/login`, data);
   console.log('Response to Login:', response); // Log the entire response object
+  if(!response.data) {
+    throw new Error('No data found in the response');
+  }
+  return response.data; // Return only the data property
+}
+
+export const postRegisterData = async (data : {email: string, password: string}) => {
+  const response = await api.post(`/register`, data);
+  console.log('Response to Register:', response); // Log the entire response object
+  if(!response.data) {
+    throw new Error('No data found in the response');
+  }
+  return response.data; // Return only the data property
+}
+export const postCreateUserData = async (data : createUserRequest) => {
+  console.log('Data to Create:', data); // Log the data being sent
+  const response = await api.post(`/users`, data);
+  console.log('Response to Create:', response); // Log the entire response object
+  if(!response.data) {
+    throw new Error('No data found in the response');
+  }
+  return response.data; // Return only the data property
+}
+
+export const deleteUserData = async (id : string) => {
+  const response = await api.delete(`/users/${id}`);
+  console.log('Response to Delete:', response); // Log the entire response object
+  if(!response.data) {
+    throw new Error('No data found in the response');
+  }
+  return response.data; // Return only the data property
+}
+
+export const putEditUserData = async (data : User) => {
+  const response = await api.put(`/users/${data.id}`, data);
+  console.log('Response to Edit:', response); // Log the entire response object
   if(!response.data) {
     throw new Error('No data found in the response');
   }
