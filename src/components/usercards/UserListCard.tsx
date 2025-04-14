@@ -1,12 +1,21 @@
 import { Box, Typography, Avatar, Grid,Button} from '@mui/material';
 import { User } from '../../utils/types/data/datatype';
 import { useNavigate} from "react-router";
+import useUIStore from '../../utils/stores/uiStore';
 
 export const UserListCard = ({user}:{user : User}) => {
   const navigate = useNavigate();
     const handleUserClick = (id : number) => {
       navigate(`/user/${id}`);
     }
+
+    const {setEditModalEnable,setData} = useUIStore();
+    const handleEditClick = (e : any) => {
+        e.stopPropagation();
+        setData(user);
+        setEditModalEnable(true);
+    }
+
     return (
      
         <Grid size = { {xs : 12}}>
@@ -22,7 +31,7 @@ export const UserListCard = ({user}:{user : User}) => {
     transition: 'transform 0.3s, box-shadow 0.3s, background-color 0.3s',
     '&:hover': {
       boxShadow: '0 8px 12px rgba(0, 0, 0, 0.2)',
-      p:3,
+    
       backgroundColor: '#f0f0f0', 
       cursor: 'pointer'
     },
@@ -34,8 +43,8 @@ export const UserListCard = ({user}:{user : User}) => {
                   <Typography variant="h5">{`${user.first_name} ${user.last_name}`}</Typography>
                   <Typography variant="body2" color="textSecondary" sx={{ display: 'column',flexDirection: 'row',alignItems: 'flex-end'}}>{user.email}</Typography>
                 </Box>  
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button variant="outlined" color="primary" size="small">
+                <Box sx={{ display: 'flex', gap: 1, zIndex: 999 }}>
+                <Button variant="outlined" color="primary" size="small" onClick={(e) => handleEditClick(e)}>
                   Edit
                 </Button>
                 <Button variant="outlined" color="error" size="small">

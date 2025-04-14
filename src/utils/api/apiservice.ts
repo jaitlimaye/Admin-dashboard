@@ -1,7 +1,5 @@
 import axios from 'axios';
 import { User } from '../types/data/datatype';
-import { getApiResponse } from '../types/response/listresponsetype';
-import { containerClasses } from '@mui/material';
 
 const API_BASE_URL = 'https://reqres.in/api';
 
@@ -43,6 +41,15 @@ export const getUserData = async (id : string) => {
 export const patchUserData = async (id : string, data : {[key: string] : string}) => {
   const response = await api.patch(`/users/${id}`, data);
   console.log('Response:', response); // Log the entire response object
+  if(!response.data) {
+    throw new Error('No data found in the response');
+  }
+  return response.data; // Return only the data property
+}
+
+export const postLoginData = async (data : {email: string, password: string}) => {
+  const response = await api.post(`/login`, data);
+  console.log('Response to Login:', response); // Log the entire response object
   if(!response.data) {
     throw new Error('No data found in the response');
   }

@@ -4,12 +4,11 @@ import { Box, Typography, Container, Button, TextField, MenuItem, Select, FormCo
 import { ErrorDisplay, Loading } from '../components/displays';
 import { User } from '../utils/types/data/datatype';
 import { CardGrid, ListGrid } from '../components/userlayouts';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import GridViewIcon from '@mui/icons-material/GridView';
-import ListIcon from '@mui/icons-material/List';
 import { useState, useReducer } from 'react';
 import { State, Action } from '../utils/types/ui/homepagestate';
-
+import Navbar from '../components/Navbar';
+import useUIStore from '../utils/stores/uiStore';
+import UserModal from '../components/modals/userModal';
 const initialState: State = {
   page: 1,
   searchQuery: "",
@@ -46,13 +45,19 @@ function reducer(state: State, action: Action): State {
 const Home = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { page, searchQuery, sortBy, sortAsc, usersPerPage } = state;
-  const [viewMode, setViewMode] = useState('list'); // Toggle between 'list' and 'card'
-  const [showFilters, setShowFilters] = useState(false);
   const { data, isLoading, isError, error, isFetching } = useQuery({
     queryKey: ['users'],
     queryFn: () => getUsers(), // Fetch all users
   });
-
+  
+  const { setEditModalEnable, editModalEnable,createModalEnable,setCreateModalEnable } = useUIStore();
+  const userdata = {
+    id: 0,
+    first_name: "John",
+    last_name: "Doe",
+    email : 'aa',
+    avatar: 'sfas',
+  }
   if (isLoading) {
     return <Loading />;
   }
@@ -75,7 +80,15 @@ const Home = () => {
   });
 
   const paginatedUsers = sortedUsers.slice((page - 1) * usersPerPage, page * usersPerPage);
-
+  const handleEditClose = () => {
+    setEditModalEnable(false);
+  };
+  const handleCreateClose = () => {
+    setCreateModalEnable(false);
+  };
+  const handleEditSave = (user : User) => {
+    console.log('close')
+  };
   if (users.length === 0) {
     return (
       <Container sx={{
@@ -95,9 +108,12 @@ const Home = () => {
   }
 
   return (
+    <>
+    <Navbar />
     <Container
       sx={{
         paddingTop: 4,
+        paddingX: 2,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-start',
@@ -117,17 +133,10 @@ const Home = () => {
         minWidth : "100%"
     }}
   >
+    <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2, width: '100%' }}>
     <Typography variant="h4" component="h1">
       Users
     </Typography>
-    <Button variant="contained" color="primary">
-      New User
-    </Button>
-  </Box>
-  <Divider sx={{ mb: 2 }} />
-      {/* Search and Filter Section */}
-      <Box>
-      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
     <TextField
       fullWidth
       label="Search"
@@ -137,14 +146,14 @@ const Home = () => {
         dispatch({ type: 'SET_SEARCH', payload: e.target.value })
       }
     />
-    <IconButton
-      color="primary"
-      onClick={() => setShowFilters((prev) => !prev)}
-    >
-      <FilterListIcon />
-    </IconButton>
-  </Stack>
-  {showFilters && (
+    <Button variant="contained" color="primary" onClick={() => setCreateModalEnable(true)}>
+      New User
+    </Button>
+    </Stack>
+  </Box>
+  
+      <Box>
+    
     <Grid
       container
       spacing={2}
@@ -216,29 +225,14 @@ const Home = () => {
         </FormControl>
       </Grid>
 
-      <Grid size ={{xs : 12 ,sm : 6, md : 3}}>
-        <IconButton
-          color="primary"
-          onClick={() =>
-            setViewMode((prev) => (prev === 'list' ? 'card' : 'list'))
-          }
-          sx={{ border: '1px solid #ccc', borderRadius: 1 }}
-        >
-          {viewMode === 'list' ? <GridViewIcon /> : <ListIcon />}
-        </IconButton>
-      </Grid>
     </Grid>
-  )}
+  
   </Box>
+  <Divider sx={{ mb: 2 }} />
       </Box>
 
-      {/* User Layout Section */}
-      {viewMode === 'list' ? (
         <ListGrid users={paginatedUsers} />
-      ) : (
-        <CardGrid users={paginatedUsers} />
-      )}
-
+      
       {/* Pagination Section */}
       <Box sx={{ marginTop: 3, display: 'flex', justifyContent: 'center' }}>
         <Pagination
@@ -254,6 +248,11 @@ const Home = () => {
         )}
       </Box>
     </Container>
+        {editModalEnable && (
+          <UserModal user={userdata}  onClose={() => handleEditClose()}  onSave={handleEditSave} title='Edit User'/>)}
+          {createModalEnable && (
+            <UserModal user={userdata}  onClose={() => handleCreateClose()}  onSave={handleEditSave} title='Create User'/>)}
+    </>
   );
 };
 
