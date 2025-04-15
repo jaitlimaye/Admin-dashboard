@@ -1,10 +1,12 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
+import useUIStore from "../../utils/stores/uiStore";
 
 interface DeleteModalProps {
-    onDelete: () => void;
+    onDelete: (id : string) => void;
     onClose: () => void;
 }
-export const DeleteModal : React.FC<DeleteModalProps> = ({  onDelete, onClose }) => {
+const DeleteModal : React.FC<DeleteModalProps> = ({  onDelete, onClose }) => {
+    const {data} = useUIStore();
     return (
         <Dialog open onClose={onClose}>
         <DialogTitle>Delete User</DialogTitle>
@@ -15,10 +17,12 @@ export const DeleteModal : React.FC<DeleteModalProps> = ({  onDelete, onClose })
             <Button onClick={onClose} color="secondary">
             Cancel
             </Button>
-            <Button onClick={() => onDelete()} color="primary">
+            <Button onClick={() => onDelete(data.id.toString())} color="primary">
             Delete
             </Button>
         </DialogActions>
         </Dialog>
     );
     }
+
+    export default DeleteModal;
