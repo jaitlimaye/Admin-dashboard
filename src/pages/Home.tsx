@@ -97,7 +97,6 @@ const Home: React.FC = () => {
           onOrderChange={(asc) => dispatch({ type: 'SET_SORT_ASC', payload: asc })}
           onUsersPerPageChange={(value) => dispatch({ type: 'SET_USERS_PER_PAGE', payload: value })}
         />
-        <Divider sx={{ mb: 2 }} />
         <Box>
           <ListGrid users={paginatedUsers} />
         </Box>

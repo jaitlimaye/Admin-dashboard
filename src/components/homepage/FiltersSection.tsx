@@ -20,7 +20,7 @@ const FiltersSection: React.FC<FiltersSectionProps> = ({
   onUsersPerPageChange,
 }) => {
   return (
-      <Grid container spacing={2} alignItems="center">
+      <Grid container spacing={2} sx={{mb:2}} alignItems="center">
         <Grid sx={{xs:12,sm:4}}>
           <FormControl fullWidth>
             <InputLabel id="sort-label">Sort By</InputLabel>
