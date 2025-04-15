@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button, TextField, Stack } from '@mui/material';
-
+import AddIcon from '@mui/icons-material/Add';
 interface HeaderSectionProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
@@ -26,7 +26,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({
           onChange={(e) => onSearchChange(e.target.value)}
         />
         <Button variant="contained" color="primary" onClick={onNewUserClick}>
-          New User
+          Add <AddIcon />
         </Button>
       </Stack>
     </Box>
