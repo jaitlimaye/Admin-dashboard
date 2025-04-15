@@ -12,13 +12,13 @@ const api = axios.create({
   },
 });
 
-export const getUsers = async () => {
+export const getUsers = async (delay : number) => {
   let page = 1;
   let allUsers: User[] = [];
   let totalPages = 1;
   
   do {
-    const response  = await api.get(`/users?page=${page}`) ;
+    const response  = await api.get(`/users?page=${page}&delay=${delay}`); ;
     const data = response.data; 
     totalPages = data.total_pages;
     console.log('Response:', response); 

@@ -13,14 +13,16 @@ import { createUserRequest } from '../utils/types/request/createUserRequesttype'
 import { DeleteModal } from '../components/modals/deleteModal';
 import SettingsModal from '../components/modals/settingsModal';
 import useSnackbarStore from '../utils/stores/snackbarStore';
+import { useSettingsStore } from '../utils/stores/settingsStore';
 
 
 const Home = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const {delay, setDelay} = useSettingsStore();
   const { page, searchQuery, sortBy, sortAsc, usersPerPage } = state;
   const { data, isLoading, isError, error, isFetching } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => getUsers(), // Fetch all users
+    queryKey: ['users',delay],
+    queryFn: () => getUsers(delay),
   });
   const {showSnackbar } = useSnackbarStore();
   
@@ -46,7 +48,7 @@ const Home = () => {
   });
 
 
-  const { setData,setEditModalEnable,settingModalEnable, editModalEnable,createModalEnable,setCreateModalEnable,setDeleteModalEnable,deleteModalEnable } = useUIStore();
+  const { setData,setEditModalEnable,settingModalEnable, setSettingModalEnable, editModalEnable,createModalEnable,setCreateModalEnable,setDeleteModalEnable,deleteModalEnable } = useUIStore();
   const initialuserdata = {
     id: 0,
     first_name: "",
@@ -89,13 +91,20 @@ const Home = () => {
   const handleDeleteClose = () => {
     setDeleteModalEnable(false);
   }
-
+  const handleSettingsClose = () => {
+    setSettingModalEnable(false);
+  }
+  const handleSettingsSave = (localdelay : number) => {
+    setDelay(localdelay);
+    setSettingModalEnable(false);
+  }
   const handleEditSave = (user : User) => {
     editMutation.mutate(user);
     setEditModalEnable(false);
   };
   const handleCreateSave = (newuser : createUserRequest ) => {
     createMutation.mutate(newuser);
+    showSnackbar(`Delay set to ${delay} secs`,"success");
     setCreateModalEnable(false);
   }
   if (users.length === 0) {
@@ -264,7 +273,7 @@ const Home = () => {
             {deleteModalEnable && (
               <DeleteModal   onClose={() => handleDeleteClose()}  onDelete={() => {}} />)}
               {settingModalEnable && (
-                <SettingsModal  onClose={() => handleEditClose()}  onSave={() => {}} />)}
+                <SettingsModal  onClose={() => handleSettingsClose()}  onSave={(localdelay) => {handleSettingsSave(localdelay)}} delay={delay} />)}
 
     </>
   );

@@ -1,12 +1,23 @@
-import React from 'react';
-import { Modal, Box, Typography, Button, Stack } from '@mui/material';
+import React, { useState } from 'react';
+import { Modal, Box, Typography, Button, Stack, Slider } from '@mui/material';
 
 interface SettingsModalProps {
   onClose: () => void;
-  onSave: () => void;
+  onSave: (newDelay: number) => void;
+  delay: number;
 }
 
-const SettingsModal: React.FC<SettingsModalProps> = ({ onClose, onSave }) => {
+const SettingsModal: React.FC<SettingsModalProps> = ({ onClose, onSave, delay }) => {
+  const [localDelay, setLocalDelay] = useState(delay);
+
+  const handleSliderChange = (event: Event, value: number | number[]) => {
+    setLocalDelay(value as number);
+  };
+
+  const handleSave = () => {
+    onSave(localDelay);
+  };
+
   return (
     <Modal open onClose={onClose} aria-labelledby="settings-modal-title">
       <Box
@@ -25,15 +36,27 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ onClose, onSave }) => {
         <Typography id="settings-modal-title" variant="h6" component="h2" gutterBottom>
           Settings
         </Typography>
-        {/* Add your settings form or content here */}
         <Typography variant="body2" sx={{ mb: 3 }}>
           Configure your settings here.
         </Typography>
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
+        <Typography variant="body2" sx={{ mb: 1 }}>
+          Set Delay (in seconds):
+        </Typography>
+        <Slider
+          value={localDelay}
+          onChange={handleSliderChange}
+          aria-labelledby="delay-slider"
+          valueLabelDisplay="auto"
+          step={1}
+          marks
+          min={0}
+          max={10}
+        />
+        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
           <Button variant="outlined" color="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={onSave}>
+          <Button variant="contained" color="primary" onClick={handleSave}>
             Save
           </Button>
         </Stack>
