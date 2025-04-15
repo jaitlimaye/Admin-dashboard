@@ -1,22 +1,34 @@
-import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 import { TextField, Box, Typography, Container } from '@mui/material';
 import { SubmitButton } from '../components/Buttons';
 import { Link } from "react-router";
+import { postRegisterData } from '../utils/api/apiservice';
+import { registerRequest } from '../utils/types/request/registerRequesttype';
+import useSnackbarStore from '../utils/stores/snackbarStore';
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<registerRequest>();
+  const {showSnackbar } = useSnackbarStore();
+  const password = watch('password');
 
-  const handleRegister = (e: any) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      console.error('Passwords do not match');
+  const mutation = useMutation({
+    mutationFn: (req :registerRequest) => postRegisterData(req),
+    onSuccess: () => {
+      showSnackbar(`Registration Successful`,"success");
+      // Add navigation or success message logic here
+    },
+    onError: (error) => {
+      showSnackbar(`Login failed:${error}`,"error");
+    },
+  });
+
+  const onSubmit = (data: registerRequest) => {
+    if (data.password !== data.confirmPassword) {
+      showSnackbar('Passwords do not match!',"error");
       return;
     }
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Add registration logic here
+    mutation.mutate(data); // Submit only email and password
   };
 
   return (
@@ -32,44 +44,41 @@ const RegisterPage = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           Register
         </Typography>
-        <Box component="form" onSubmit={handleRegister} sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
             fullWidth
             id="email"
             label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register('email', { required: 'Email is required' })}
+            error={!!errors.email}
           />
           <TextField
             margin="normal"
             required
             fullWidth
-            name="password"
+            id="password"
             label="Password"
             type="password"
-            id="password"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register('password', { required: 'Password is required' })}
+            error={!!errors.password}
           />
           <TextField
             margin="normal"
             required
             fullWidth
-            name="confirmPassword"
+            id="confirmPassword"
             label="Confirm Password"
             type="password"
-            id="confirmPassword"
-            autoComplete="new-password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            {...register('confirmPassword', {
+              required: 'Confirm Password is required',
+              validate: (value) =>
+                value === password || 'Passwords do not match',
+            })}
+            error={!!errors.confirmPassword}
           />
-          <SubmitButton text="Register" />
+          <SubmitButton text="Register"  />
           <Typography variant="body2" sx={{ mt: 2 }}>
             Already have an account? <Link to="/login">Login</Link>
           </Typography>

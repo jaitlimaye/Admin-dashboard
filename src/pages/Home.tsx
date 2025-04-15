@@ -11,6 +11,8 @@ import UserModal from '../components/modals/userModal';
 import {reducer,initialState} from '../utils/reducers/homePageReducer';
 import { createUserRequest } from '../utils/types/request/createUserRequesttype';
 import { DeleteModal } from '../components/modals/deleteModal';
+import SettingsModal from '../components/modals/settingsModal';
+import useSnackbarStore from '../utils/stores/snackbarStore';
 
 
 const Home = () => {
@@ -20,26 +22,31 @@ const Home = () => {
     queryKey: ['users'],
     queryFn: () => getUsers(), // Fetch all users
   });
+  const {showSnackbar } = useSnackbarStore();
   
   const createMutation = useMutation({
     mutationFn: (newuserdata: createUserRequest) =>
       postCreateUserData(newuserdata),
+    onSuccess: () => {
+      showSnackbar(`User Created Successfully!`,"success");
+    },
     onError: (err) => {
-      console.error("Error updating user:", err);
-      // Show error toast/snackbar here if needed
+      showSnackbar(`Error creating user ${err}`,"error");
     }
   });
   const editMutation = useMutation({
     mutationFn: (edituserdata: User) =>
       putEditUserData(edituserdata),
+    onSuccess: () => {
+      showSnackbar(`User Edited Successfully!`,"success");
+    },
     onError: (err) => {
-      console.error("Error updating user:", err);
-      // Show error toast/snackbar here if needed
+      showSnackbar(`Error editing user ${err}`,"error");
     }
   });
 
 
-  const { setData,setEditModalEnable, editModalEnable,createModalEnable,setCreateModalEnable,setDeleteModalEnable,deleteModalEnable } = useUIStore();
+  const { setData,setEditModalEnable,settingModalEnable, editModalEnable,createModalEnable,setCreateModalEnable,setDeleteModalEnable,deleteModalEnable } = useUIStore();
   const initialuserdata = {
     id: 0,
     first_name: "",
@@ -88,7 +95,6 @@ const Home = () => {
     setEditModalEnable(false);
   };
   const handleCreateSave = (newuser : createUserRequest ) => {
-    console.log('new user',newuser)
     createMutation.mutate(newuser);
     setCreateModalEnable(false);
   }
@@ -257,6 +263,9 @@ const Home = () => {
             <UserModal  onClose={() => handleCreateClose()}  onSave={handleCreateSave} title='Create User'/>)}
             {deleteModalEnable && (
               <DeleteModal   onClose={() => handleDeleteClose()}  onDelete={() => {}} />)}
+              {settingModalEnable && (
+                <SettingsModal  onClose={() => handleEditClose()}  onSave={() => {}} />)}
+
     </>
   );
 };

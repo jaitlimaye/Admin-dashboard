@@ -8,6 +8,8 @@ export interface UIState {
     setEditModalEnable: (value: boolean) => void;
     setCreateModalEnable: (value: boolean) => void;
     setDeleteModalEnable: (value: boolean) => void;
+    setSettingModalEnable: (value: boolean) => void;
+    settingModalEnable: boolean;
     data : User;
     setData: (user: User) => void;
 }
@@ -16,6 +18,8 @@ const useUIStore = create<UIState>((set) => ({
     editModalEnable: false,
     createModalEnable: false,
     deleteModalEnable: false,
+    settingModalEnable: false,
+    setSettingModalEnable: (value: boolean) => set({ settingModalEnable: value }),
     setEditModalEnable: (value: boolean) => set({ editModalEnable: value }),
     setCreateModalEnable: (value: boolean) => set({ createModalEnable: value }),
     setDeleteModalEnable: (value: boolean) => set({ deleteModalEnable: value }),

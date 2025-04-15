@@ -11,19 +11,23 @@ import {
   import { useMutation } from "@tanstack/react-query";
 import { patchUserData } from "../utils/api/apiservice";
   import { useState } from "react";
+import useSnackbarStore from "../utils/stores/snackbarStore";
 
 export const EditableField = ({field,label,userId,field_key,} : {field:string, label:string,userId : string,field_key :string}) => {
         const [isEditing, setIsEditing] = useState(false);
       const [editedField, setEditedField] = useState("");
+      const {showSnackbar } = useSnackbarStore();
       const { mutate, isPending } = useMutation({
         mutationFn: (newValue: string) =>
           patchUserData(userId, { [field_key]: newValue }),
         onSuccess: () => {
+          showSnackbar(`Edited Successfully!`,"success");
           setIsEditing(false);
           // You could also show a snackbar or refetch user data here
         },
         onError: (err) => {
-          console.error("Error updating user:", err);
+          
+        showSnackbar(`failed to edit:${err}`,"error");
           // Show error toast/snackbar here if needed
         }
       });

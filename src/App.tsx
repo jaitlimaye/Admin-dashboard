@@ -1,5 +1,6 @@
 
 import './App.css'
+import SnackbarHandler from './components/SnackbarHandler'
 import { RouterService } from './utils/routes/RouterService'
 import { QueryClientProvider,QueryClient } from '@tanstack/react-query'
 
@@ -9,6 +10,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterService />
+      <SnackbarHandler />
     </QueryClientProvider>
     )
 }

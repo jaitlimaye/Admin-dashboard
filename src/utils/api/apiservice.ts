@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { User } from '../types/data/datatype';
 import { createUserRequest } from '../types/request/createUserRequesttype';
+import { registerRequest } from '../types/request/registerRequesttype';
 
 const API_BASE_URL = 'https://reqres.in/api';
 
@@ -57,7 +58,7 @@ export const postLoginData = async (data : {email: string, password: string}) =>
   return response.data; // Return only the data property
 }
 
-export const postRegisterData = async (data : {email: string, password: string}) => {
+export const postRegisterData = async (data : registerRequest) => {
   const response = await api.post(`/register`, data);
   console.log('Response to Register:', response); // Log the entire response object
   if(!response.data) {
@@ -92,3 +93,4 @@ export const putEditUserData = async (data : User) => {
   }
   return response.data; // Return only the data property
 }
+

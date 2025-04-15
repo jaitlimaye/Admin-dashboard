@@ -5,19 +5,21 @@ import { Link } from "react-router";
 import { useMutation } from '@tanstack/react-query';
 import { postLoginData } from '../utils/api/apiservice';
 import useAuthStore, { IAuth } from '../utils/stores/authStore';
+import useSnackbarStore from '../utils/stores/snackbarStore';
 
 const LoginPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<{ email: string; password: string }>();
   const setToken  = useAuthStore((state : IAuth) => state.setToken);
-
+  const {showSnackbar } = useSnackbarStore();
   const mutation = useMutation({
     mutationFn: (data : {email: string, password: string}) =>
       postLoginData(data),
     onSuccess: (response) => {
+        showSnackbar("Logged in successfully!","success");
         setToken(response.token);
       },
       onError: (error) => {
-        console.error('Login failed:', error);
+        showSnackbar(`Login failed:${error}`,"error");
       },}
     
   );

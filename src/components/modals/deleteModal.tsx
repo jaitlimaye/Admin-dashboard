@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { User } from "../../utils/types/data/datatype";
+
 interface DeleteModalProps {
     onDelete: () => void;
     onClose: () => void;
