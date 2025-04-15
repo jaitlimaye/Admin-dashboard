@@ -19,7 +19,7 @@ const LoginPage = () => {
         setToken(response.token);
       },
       onError: (error) => {
-        showSnackbar(`Login failed:${error}`,"error");
+        showSnackbar(`Login failed:${error.message}`,"error");
       },}
     
   );

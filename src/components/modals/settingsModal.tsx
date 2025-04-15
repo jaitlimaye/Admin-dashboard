@@ -11,6 +11,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ onClose, onSave, delay })
   const [localDelay, setLocalDelay] = useState(delay);
 
   const handleSliderChange = (event: Event, value: number | number[]) => {
+    event.preventDefault(); // Prevent default behavior of the event
     setLocalDelay(value as number);
   };
 

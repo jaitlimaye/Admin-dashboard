@@ -27,7 +27,7 @@ export const EditableField = ({field,label,userId,field_key,} : {field:string, l
         },
         onError: (err) => {
           
-        showSnackbar(`failed to edit:${err}`,"error");
+        showSnackbar(`failed to edit:${err.message}`,"error");
           // Show error toast/snackbar here if needed
         }
       });

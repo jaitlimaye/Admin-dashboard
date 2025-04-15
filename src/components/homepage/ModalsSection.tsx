@@ -14,13 +14,13 @@ const ModalsSection = () => {
     const createMutation = useMutation({
         mutationFn: (newuserdata: createUserRequest) => postCreateUserData(newuserdata),
         onSuccess: () => showSnackbar(`User Created Successfully!`, "success"),
-        onError: (err) => showSnackbar(`Error creating user ${err}`, "error"),
+        onError: (err) => showSnackbar(`Error creating user ${err.message}`, "error"),
       });
     
       const editMutation = useMutation({
         mutationFn: (edituserdata: User) => putEditUserData(edituserdata),
         onSuccess: () => showSnackbar(`User Edited Successfully!`, "success"),
-        onError: (err) => showSnackbar(`Error editing user ${err}`, "error"),
+        onError: (err) => showSnackbar(`Error editing user ${err.message}`, "error"),
       });
 
       const deleteMutation = useMutation({

@@ -2,28 +2,28 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { TextField, Box, Typography, Container } from '@mui/material';
 import { SubmitButton } from '../components/Buttons';
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { postRegisterData } from '../utils/api/apiservice';
 import { registerRequest } from '../utils/types/request/registerRequesttype';
 import useSnackbarStore from '../utils/stores/snackbarStore';
 
 const RegisterPage = () => {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<registerRequest>();
+  const { register, handleSubmit, formState: { errors } } = useForm<registerRequest>();
   const {showSnackbar } = useSnackbarStore();
-  const password = watch('password');
-
+  const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: (req :registerRequest) => postRegisterData(req),
     onSuccess: () => {
       showSnackbar(`Registration Successful`,"success");
-      // Add navigation or success message logic here
+      navigate('/login'); // Redirect to login page after successful registration
     },
     onError: (error) => {
-      showSnackbar(`Login failed:${error}`,"error");
+      showSnackbar(`Login failed:${error.message}`,"error");
     },
   });
 
   const onSubmit = (data: registerRequest) => {
+    console.log(data);
     if (data.password !== data.confirmPassword) {
       showSnackbar('Passwords do not match!',"error");
       return;
@@ -71,11 +71,7 @@ const RegisterPage = () => {
             id="confirmPassword"
             label="Confirm Password"
             type="password"
-            {...register('confirmPassword', {
-              required: 'Confirm Password is required',
-              validate: (value) =>
-                value === password || 'Passwords do not match',
-            })}
+           {...register('confirmPassword', { required: 'Confirm Password is required' })}
             error={!!errors.confirmPassword}
           />
           <SubmitButton text="Register"  />
